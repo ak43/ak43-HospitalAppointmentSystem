@@ -1,19 +1,27 @@
 ﻿using static System.Runtime.InteropServices.JavaScript.JSType;
 using System.Xml;
 using HospitalAppointmentSystem.Models;
+using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalAppointmentSystem.Models
 {
+    [PrimaryKey("Id")]
     public class Appointment
     {
-        public int AppointmentId { get; set; }
-        public DateOnly AppointmentDate { get; set; } 
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+        public int Id { get; set; }
+        public DateOnly AppointmentDate { get; set; }
+        public TimeOnly AppointmentTime { get; set; }
         public bool IsConfirmed { get; set; } 
         public string Status { get; set;}
 
+        // Foreign keys
+        public int DoctorId { get; set; } // Foreign key to Doctor
+        public int PatientId { get; set; } // Foreign key to Patient
+
         // Navigation properties
-        public Department Department { get; set;  }
-        public Patient Patient { get; set; }
-        public Doctor Doctor { get; set; }  
+        public Doctor Doctor { get; set; } // Reference to the Doctor
+        public Patient Patient { get; set; } // Reference to the Patient
     }
 }
