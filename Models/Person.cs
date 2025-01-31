@@ -4,20 +4,15 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace HospitalAppointmentSystem.Models
 {
     [PrimaryKey("Id")]
-    public class User
+    public class Person
     {
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-        public string firstName { get; set; }
-        public string lastName { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
         public string Sex { get; set; }
-        public string email { get; set; }
-        public string phoneNumber { get; set;}
-
-        public string username { get; set; }
-        public string password { get; set; }
-
-        
+        public string Email { get; set; }
+        public string PhoneNumber { get; set;}       
     }
 }
 

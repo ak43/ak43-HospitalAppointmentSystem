@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HospitalAppointmentSystem.Models
 {
-    public class Doctor : User
+    public class Doctor : Person
     {
 
         public string Specialization { get; set; }

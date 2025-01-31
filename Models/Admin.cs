@@ -2,7 +2,7 @@
 
 namespace HospitalAppointmentSystem.Models
 {
-    public class Admin : User 
+    public class Admin : Person 
     {
 
     }

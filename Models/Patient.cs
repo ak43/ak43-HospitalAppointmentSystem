@@ -4,7 +4,7 @@ using System.Threading.Channels;
 
 namespace HospitalAppointmentSystem.Models
 {
-    public class Patient : User 
+    public class Patient : Person 
     {
        
         public string MRN { get; set; }
