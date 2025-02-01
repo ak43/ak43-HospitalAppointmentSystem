@@ -209,6 +209,9 @@ namespace HospitalAppointmentSystem.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("int");
 
+                    b.Property<int>("DoctorId")
+                        .HasColumnType("int");
+
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -238,6 +241,8 @@ namespace HospitalAppointmentSystem.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("DoctorId");
 
                     b.ToTable("Patients");
                 });
@@ -319,6 +324,17 @@ namespace HospitalAppointmentSystem.Migrations
                     b.Navigation("Patient");
                 });
 
+            modelBuilder.Entity("HospitalAppointmentSystem.Models.Patient", b =>
+                {
+                    b.HasOne("HospitalAppointmentSystem.Models.Doctor", "Doctor")
+                        .WithMany("Patients")
+                        .HasForeignKey("DoctorId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Doctor");
+                });
+
             modelBuilder.Entity("HospitalAppointmentSystem.Models.Department", b =>
                 {
                     b.Navigation("Doctors");
@@ -329,6 +345,8 @@ namespace HospitalAppointmentSystem.Migrations
                     b.Navigation("Appointments");
 
                     b.Navigation("Availabilities");
+
+                    b.Navigation("Patients");
                 });
 
             modelBuilder.Entity("HospitalAppointmentSystem.Models.Patient", b =>

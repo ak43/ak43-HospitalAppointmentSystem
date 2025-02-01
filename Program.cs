@@ -12,6 +12,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
 //REgister AutoMapper with an application's Dependency Injection (DI)
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 

@@ -92,9 +92,9 @@ namespace HospitalAppointmentSystem.Controllers
                 return BadRequest(ModelState);
             var doctor = _doctorRepository.GetDoctors().Where(d => d.FirstName.Trim().ToUpper() == doctorToSave.FirstName.Trim().ToUpper() &&
             d.LastName.Trim().ToUpper() == doctorToSave.LastName.Trim().ToUpper() &&
-            d.Specialization == doctorToSave.Specialization.Trim().ToUpper()).FirstOrDefault();
+            d.Specialization == doctorToSave.Specialization.Trim().ToUpper()).ToList();
 
-            if (doctor != null)
+            if (doctor.Any())
             {
                 ModelState.AddModelError("", "Doctor already exists");
                 return StatusCode(422, ModelState);

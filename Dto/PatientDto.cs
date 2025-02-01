@@ -11,5 +11,6 @@
         public string MRN { get; set; }
         public int Age { get; set; }
         public string MedicalHistory { get; set; }
+        public int DoctorId { get; set; }
     }
 }

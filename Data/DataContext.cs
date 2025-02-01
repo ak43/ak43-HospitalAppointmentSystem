@@ -18,6 +18,13 @@ namespace HospitalAppointmentSystem.Data
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+
+            modelBuilder.Entity<Patient>()
+       .HasOne(p => p.Doctor)
+       .WithMany(d => d.Patients)
+       .HasForeignKey(p => p.DoctorId)
+       .OnDelete(DeleteBehavior.Restrict); // Use Restrict or NoAction instead of Cascade
+
             // Configure the Doctor ↔ Appointment relationship
             modelBuilder.Entity<Appointment>()
                 .HasOne(a => a.Doctor)

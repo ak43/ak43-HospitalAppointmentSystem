@@ -11,7 +11,7 @@ namespace HospitalAppointmentSystem.Interfaces
         ICollection<Patient> GetPatientByDepartment(int departmentName);
 
         bool PatientExists(int PatientId);
-        bool SavePatient(Patient Patient);
+        bool SavePatient(int doctorId, Patient Patient);
         //bool CreatePatient(int departmentId, Patient Patient);
 
         bool UpdatePatient(Patient Patient);

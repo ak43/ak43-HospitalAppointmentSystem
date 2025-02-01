@@ -12,9 +12,21 @@ namespace HospitalAppointmentSystem.Repositories
         {
             _context = context;
         }
-        public bool SavePatient(Patient Patient)
+        public bool SavePatient(int doctorId, Patient Patient) 
         {
+            var doctorPatientntity = _context.Doctors.Where(a => a.Id == doctorId).FirstOrDefault();
+            //var category = _context.Categories.Where(a => a.Id == categoryId).FirstOrDefault();
+
             _context.Add(Patient);
+
+            var docPatient = new DoctorPatient
+            {
+                Doctor = doctorPatientntity,
+                Patient = Patient
+            };
+            _context.Add(docPatient);
+
+            
             return Save();
         }
 

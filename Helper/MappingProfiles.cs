@@ -12,6 +12,8 @@ namespace HospitalAppointmentSystem.Helper
             CreateMap<DoctorDto, Doctor>();
             CreateMap<Patient, PatientDto>();
             CreateMap<PatientDto, Patient>();
+            CreateMap<Department, DepartmentDto>();
+            CreateMap<DepartmentDto, Department>();
         }
         
     }

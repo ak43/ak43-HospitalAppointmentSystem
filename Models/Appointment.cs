@@ -9,7 +9,6 @@ namespace HospitalAppointmentSystem.Models
     [PrimaryKey("Id")]
     public class Appointment
     {
-        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public DateOnly AppointmentDate { get; set; }
         public TimeOnly AppointmentTime { get; set; }

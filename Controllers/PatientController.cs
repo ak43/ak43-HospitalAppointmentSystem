@@ -72,16 +72,19 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public IActionResult SavePatient([FromBody] PatientDto patientToSave)
+        public IActionResult SavePatient(int doctorId, [FromBody] PatientDto patientToSave) 
         {
             if (patientToSave == null)
                 return BadRequest(ModelState);
 
-            var patients = _patientRepository.GetPatients().Where(p => p.FirstName.Trim().ToUpper() == patientToSave.FirstName.Trim().ToUpper() &&
-            p.LastName.Trim().ToUpper() == patientToSave.LastName.Trim().ToUpper()).ToList(); 
+            var patient = _patientRepository.GetPatients()
+                .FirstOrDefault(p => p.FirstName.Trim().ToUpper() == patientToSave.FirstName.Trim().ToUpper() &&
+            p.LastName.Trim().ToUpper() == patientToSave.LastName.Trim().ToUpper()); 
             
-            if (patients.Count > 0)
-            {
+            // List.Any() is used to check if IEnumerable is Empty or Not
+            //if (patients.Any())
+                if (patient != null)
+                {
                 ModelState.AddModelError("", "Patient with the same name already exists");
                 return StatusCode(422, ModelState);
             }
@@ -90,7 +93,7 @@ namespace HospitalAppointmentSystem.Controllers
 
             var patientMap = _mapper.Map<Patient>(patientToSave);
             //ownerMap.Country = _countryRepository.GetCountry(countryId);
-            if (!_patientRepository.SavePatient(patientMap))
+            if (!_patientRepository.SavePatient(doctorId, patientMap)) 
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
@@ -134,9 +137,9 @@ namespace HospitalAppointmentSystem.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var patientoDelete = _patientRepository.GetPatient(patientId);
+            var patienToDelete = _patientRepository.GetPatient(patientId);
             //var categoryMap = _mapper.Map
-            if (!_patientRepository.DeletePatient(patientoDelete))
+            if (!_patientRepository.DeletePatient(patienToDelete))
             {
                 ModelState.AddModelError("", "Something wrong while deleting owner.");
                 return StatusCode(500, ModelState);
