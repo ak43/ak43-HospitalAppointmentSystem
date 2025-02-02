@@ -17,7 +17,7 @@ namespace HospitalAppointmentSystem.Models
         public ICollection<Appointment> Appointments { get; set; } = new List<Appointment>();
 
         // Navigation property for availability slots
-        public ICollection<DoctorAvailability> Availabilities { get; set; } = new List<DoctorAvailability>();
+        public DoctorAvailability Availabilities { get; set; } 
 
     }
 }

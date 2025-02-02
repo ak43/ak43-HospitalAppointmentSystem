@@ -2,7 +2,10 @@
 {
     public class DoctorAvailability
     {
-        public int iD { get; set; } // Primary key
+        public int Id{ get; set; } // Primary key
+        public DayOfWeek DayOfWeek { get; set; }
+        // Part of the Day: Morning, Afternoon, Night
+        //public string PartOfDay { get; set; }
         public DateTime StartTime { get; set; } // Start time of the availability slot
         public DateTime EndTime { get; set; } // End time of the availability slot
 

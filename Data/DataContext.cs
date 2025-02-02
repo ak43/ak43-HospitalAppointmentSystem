@@ -15,6 +15,7 @@ namespace HospitalAppointmentSystem.Data
         public DbSet<Feedback> Feedbacks { get; set; }
         public DbSet<Appointment> Appointments { get; set; }
         public DbSet<DoctorPatient> DoctorPatients { get; set; }
+        public DbSet<DoctorAvailability> DoctorAvailabilities { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -24,6 +25,7 @@ namespace HospitalAppointmentSystem.Data
        .WithMany(d => d.Patients)
        .HasForeignKey(p => p.DoctorId)
        .OnDelete(DeleteBehavior.Restrict); // Use Restrict or NoAction instead of Cascade
+            
 
             // Configure the Doctor ↔ Appointment relationship
             modelBuilder.Entity<Appointment>()
@@ -39,12 +41,18 @@ namespace HospitalAppointmentSystem.Data
                     .HasForeignKey(a => a.PatientId)
                     .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
+            modelBuilder.Entity<Doctor>()
+            .HasOne(d => d.Availabilities)
+            .WithOne(da => da.Doctor)
+            .HasForeignKey<DoctorAvailability>(da => da.DoctorId)
+            .OnDelete(DeleteBehavior.Restrict); // Disable cascade delete
+
             // Configure the Doctor ↔ DoctorAvailability relationship
-            modelBuilder.Entity<DoctorAvailability>()
-                    .HasOne(da => da.Doctor)
-                    .WithMany(d => d.Availabilities)
-                    .HasForeignKey(da => da.DoctorId)
-                    .OnDelete(DeleteBehavior.Cascade); // Cascade delete for availability slots
+            //modelBuilder.Entity<DoctorAvailability>()
+            //        .HasOne(da => da.Doctor)
+            //        .WithOne(d => d.Availabilities)
+            //        .HasForeignKey(da => da.DoctorId)
+            //        .OnDelete(DeleteBehavior.NoAction); // Cascade delete for availability slots
         }
     }
 }

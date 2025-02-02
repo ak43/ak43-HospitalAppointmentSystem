@@ -123,11 +123,14 @@ namespace HospitalAppointmentSystem.Migrations
 
             modelBuilder.Entity("HospitalAppointmentSystem.Models.DoctorAvailability", b =>
                 {
-                    b.Property<int>("iD")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int");
 
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("iD"));
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
 
                     b.Property<int>("DoctorId")
                         .HasColumnType("int");
@@ -138,11 +141,12 @@ namespace HospitalAppointmentSystem.Migrations
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime2");
 
-                    b.HasKey("iD");
+                    b.HasKey("Id");
 
-                    b.HasIndex("DoctorId");
+                    b.HasIndex("DoctorId")
+                        .IsUnique();
 
-                    b.ToTable("DoctorAvailability");
+                    b.ToTable("DoctorAvailabilities");
                 });
 
             modelBuilder.Entity("HospitalAppointmentSystem.Models.DoctorPatient", b =>
@@ -278,9 +282,9 @@ namespace HospitalAppointmentSystem.Migrations
             modelBuilder.Entity("HospitalAppointmentSystem.Models.DoctorAvailability", b =>
                 {
                     b.HasOne("HospitalAppointmentSystem.Models.Doctor", "Doctor")
-                        .WithMany("Availabilities")
-                        .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .WithOne("Availabilities")
+                        .HasForeignKey("HospitalAppointmentSystem.Models.DoctorAvailability", "DoctorId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Doctor");
@@ -329,7 +333,7 @@ namespace HospitalAppointmentSystem.Migrations
                     b.HasOne("HospitalAppointmentSystem.Models.Doctor", "Doctor")
                         .WithMany("Patients")
                         .HasForeignKey("DoctorId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Doctor");
@@ -344,7 +348,8 @@ namespace HospitalAppointmentSystem.Migrations
                 {
                     b.Navigation("Appointments");
 
-                    b.Navigation("Availabilities");
+                    b.Navigation("Availabilities")
+                        .IsRequired();
 
                     b.Navigation("Patients");
                 });
