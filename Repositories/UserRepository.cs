@@ -60,5 +60,10 @@ namespace HospitalAppointmentSystem.Repositories
             var saved = _context.SaveChanges();
             return saved > 0 ? true : false;
         }
+
+        public User GetUserByPerson(int personId)
+        {
+            return _context.Users.Where(u => u.PersonId == personId).FirstOrDefault();
+                }
     }
 }

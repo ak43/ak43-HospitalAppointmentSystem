@@ -58,6 +58,11 @@ namespace HospitalAppointmentSystem.Data
                     .HasForeignKey(a => a.PatientId)
                     .OnDelete(DeleteBehavior.Restrict); // Prevent cascade delete
 
+            modelBuilder.Entity<User>()
+                .HasOne(u => u.Person)
+                .WithMany()
+                .HasForeignKey(u => u.PersonId);
+
             //modelBuilder.Entity<Doctor>()
             //.HasOne(d => d.Availabilities)
             //.WithOne(da => da.Doctor)

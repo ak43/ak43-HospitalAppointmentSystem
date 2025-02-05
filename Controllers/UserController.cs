@@ -19,41 +19,41 @@ namespace HospitalAppointmentSystem.Controllers
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(ICollection<User>))]
+        [ProducesResponseType(200, Type = typeof(ICollection<UserDto>))]
         [ProducesResponseType(400)]
         public IActionResult GetUsers()
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var users = _mapper.Map<List<User>>(_userRepository.GetUsers());
+            var users = _mapper.Map<List<UserDto>>(_userRepository.GetUsers());
             if (!users.Any())
                 return NotFound();
             return Ok(users);
         }
 
         [HttpGet("{userId}")]
-        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
         public IActionResult GetUser(int userId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = _mapper.Map<User>(_userRepository.GetUser(userId));
+            var user = _mapper.Map<UserDto>(_userRepository.GetUser(userId));
             if (user == null)
                 return NotFound();
             return Ok(user);
         }
         [HttpGet("username/{username}")]
-        [ProducesResponseType(200, Type = typeof(User))]
+        [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
         public IActionResult GetUser(string username)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = _mapper.Map<User>(_userRepository.GetUser(username));
+            var user = _mapper.Map<UserDto>(_userRepository.GetUser(username));
             if (user == null)
                 return NotFound();
             return Ok(user);
@@ -68,7 +68,7 @@ namespace HospitalAppointmentSystem.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var user = _mapper.Map<User>(_userRepository.GetUserByName(firstName, lastName));
+            var user = _mapper.Map<UserDto>(_userRepository.GetUserByName(firstName, lastName));
             if (user == null)
                 return NotFound();
             return Ok(user);
@@ -84,22 +84,31 @@ namespace HospitalAppointmentSystem.Controllers
 
             // User account is created for existing person - registered person
             //var person = _userRepository.GetUser
-            var user = _userRepository.GetUser(userToSave.Username);
+             var user = _userRepository.GetUser(userToSave.Username);
             if(user != null)
             {
                 ModelState.AddModelError("", "Username already exisits");
                 return StatusCode(422, ModelState);
             }
-            var userMap = _mapper.Map<User>(userToSave);
-            if (user != null)
+            // CHECK if the person has already got a username
+            var user1 = _userRepository.GetUserByPerson(userToSave.PersonId);
+            if(user1 != null)
             {
-                var user2 = _userRepository.GetUserByName(user.Person.FirstName, user.Person.LastName);
-                if (user2 != null)
-                {
-                    ModelState.AddModelError("", "The person has existing user account.");
-                    return StatusCode(422, ModelState);
-                }
+                ModelState.AddModelError("", "The person has existing user acount.");
+                return StatusCode(422, ModelState);
             }
+            var userMap = _mapper.Map<User>(userToSave);
+            // Can be deleted 
+            //if (user != null) 
+            //{
+            //    var user2 = _userRepository.GetUserByName(user.Person.FirstName, user.Person.LastName);
+            //    if (user2 != null)
+            //    {
+            //        ModelState.AddModelError("", "The person has existing user account.");
+            //        return StatusCode(422, ModelState);
+            //    }
+                
+            //}
             if (!ModelState.IsValid)
                 return BadRequest();
 
