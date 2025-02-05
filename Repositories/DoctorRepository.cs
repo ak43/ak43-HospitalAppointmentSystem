@@ -25,7 +25,7 @@ namespace HospitalAppointmentSystem.Repositories
 
         public ICollection<Doctor> GetDoctors(string firstName)
         {
-            return _context.Doctors.Where(d => d.FirstName == firstName).ToList();
+            return _context.Doctors.Where(d => d.FirstName.Contains(firstName)).ToList();
         }
 
         public ICollection<Doctor> GetDoctorByDepartment(int departmentId)
@@ -109,6 +109,11 @@ namespace HospitalAppointmentSystem.Repositories
             throw new NotImplementedException();
         }
         public bool DeleteAvailability(int doctorId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public ICollection<Availability> GetDoctorAvailability(int doctorId)
         {
             throw new NotImplementedException();
         }

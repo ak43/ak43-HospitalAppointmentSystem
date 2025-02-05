@@ -11,9 +11,9 @@ namespace HospitalAppointmentSystem.Models
     {
         public int Id { get; set; }
         public DateOnly AppointmentDate { get; set; }
-        public TimeOnly AppointmentTime { get; set; }
-        public bool IsConfirmed { get; set; } 
-        public string Status { get; set;}
+        public TimeSpan AppointmentTime { get; set; }
+        public bool IsConfirmed { get; set; } = false;
+        public string? Status { get; set;}
 
         // Foreign keys
         public int DoctorId { get; set; } // Foreign key to Doctor
@@ -21,6 +21,6 @@ namespace HospitalAppointmentSystem.Models
 
         // Navigation properties
         public Doctor Doctor { get; set; } // Reference to the Doctor
-        public Patient Patient { get; set; } // Reference to the Patient
+        public Patient Patient { get; set; }// Reference to the Patient
     }
 }

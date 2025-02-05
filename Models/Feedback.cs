@@ -11,10 +11,11 @@ namespace HospitalAppointmentSystem.Models
         [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
         public int Rate { get; set; }
-        public string Comment { get; set; }
+        public string? Comment { get; set; }
+        public int DoctorId { get; set; }
 
         // Navigation properties
-        public Patient Patient { get; set; }
+        //public Patient Patient { get; set; }
         public Doctor Doctor { get; set; }
 
     }

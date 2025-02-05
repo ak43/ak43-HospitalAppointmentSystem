@@ -9,51 +9,51 @@ namespace HospitalAppointmentSystem.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
-    public class DoctorAvailabilityController : Controller
+    public class AvailabilityController : Controller
     {
-        private readonly IDoctorAvailabilityRepository _doctorAvailabilityRepository;
+        private readonly IAvailabilityRepository _availabilityRepository;
         private readonly IMapper _mapper;
 
-        public DoctorAvailabilityController(IDoctorAvailabilityRepository doctorAvailabilityRepository,
+        public AvailabilityController(IAvailabilityRepository availabilityRepository,
             IMapper mapper)
         {
-            _doctorAvailabilityRepository = doctorAvailabilityRepository;
+            _availabilityRepository = availabilityRepository;
             _mapper = mapper;
         }
 
         [HttpGet]
-        [ProducesResponseType(200, Type = typeof(ICollection<DoctorAvailability>))]
+        [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
         [ProducesResponseType(400)]
         public IActionResult GetAllAvailabilities()
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var availabilities = _mapper.Map<List<DoctorAvailabilityDto>>(_doctorAvailabilityRepository.GetAvailabilities());
+            var availabilities = _mapper.Map<List<AvailabilityDto>>(_availabilityRepository.GetAvailabilities());
             if (!availabilities.Any())
                 return NotFound();
             return Ok(availabilities);
         }
         [HttpGet("{availabilityId}")]
-        [ProducesResponseType(200, Type = typeof(ICollection<DoctorAvailability>))]
+        [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
         [ProducesResponseType(400)]
         public IActionResult GetAvailability(int availabilityId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var availabilities = _mapper.Map<DoctorAvailabilityDto>(_doctorAvailabilityRepository.GetAvailability(availabilityId));
+            var availabilities = _mapper.Map<AvailabilityDto>(_availabilityRepository.GetAvailability(availabilityId));
             if (availabilities == null)
                 return NotFound();
             return Ok(availabilities);
         }
 
         [HttpGet("doctor/{doctorId}")]
-        [ProducesResponseType(200, Type = typeof(ICollection<DoctorAvailability>))]
+        [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
         [ProducesResponseType(400)]
         public IActionResult GetAvailabilityByDoctor(int doctorId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var availabilities = _mapper.Map<List<DoctorAvailabilityDto>>(_doctorAvailabilityRepository.GetAvailabilityByDoctor(doctorId));
+            var availabilities = _mapper.Map<List<AvailabilityDto>>(_availabilityRepository.GetAvailabilityByDoctor(doctorId));
             if (availabilities == null)
                 return NotFound();
             return Ok(availabilities);
@@ -62,28 +62,28 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        public IActionResult SaveAvailability([FromBody] DoctorAvailability availabilityToSave)
+        public IActionResult SaveAvailability([FromBody] AvailabilityDto availabilityToSave)
         {
             if (availabilityToSave == null)
                 return BadRequest(ModelState);
 
-            var patient = _doctorAvailabilityRepository.GetAvailabilities()
-                .FirstOrDefault(p => p.DoctorId == availabilityToSave.DoctorId &&
-            p.DayOfWeek == availabilityToSave.DayOfWeek);
+            var patient = _availabilityRepository.GetAvailabilities()
+                .FirstOrDefault(p => p.DoctorId == availabilityToSave.DoctorId && 
+            p.DayOfWeek == availabilityToSave.DayOfWeek); 
 
-            // List.Any() is used to check if IEnumerable is Empty or Not
-            //if (patients.Any())
-            if (patient != null)
+            // List.Any() is used to check if IEnumerable is Empty or Not 
+            //if (patients.Any()) 
+            if (patient != null) 
             {
-                ModelState.AddModelError("", "Doctor Availability data for this day already exists");
+                ModelState.AddModelError("", "Doctor Availability data for this day already exists"); 
                 return StatusCode(422, ModelState);
             }
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var availabilityMap = _mapper.Map<DoctorAvailability>(availabilityToSave);
+            var availabilityMap = _mapper.Map<Availability>(availabilityToSave);
             //ownerMap.Country = _countryRepository.GetCountry(countryId);
-            if (!_doctorAvailabilityRepository.SaveAvailability(availabilityMap))
+            if (!_availabilityRepository.SaveAvailability(availabilityMap))
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
@@ -95,7 +95,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateDoctor(int availabilityId, [FromBody] DoctorAvailabilityDto availabilityUpdated)
+        public IActionResult UpdateDoctor(int availabilityId, [FromBody] AvailabilityDto availabilityUpdated)
         {
             if (availabilityUpdated == null)
                 return BadRequest(ModelState);
@@ -103,11 +103,11 @@ namespace HospitalAppointmentSystem.Controllers
             if (availabilityId != availabilityUpdated.Id)
                 return BadRequest(ModelState);
 
-            if (!_doctorAvailabilityRepository.DoctorAvailabilityExists(availabilityId))
+            if (!_availabilityRepository.DoctorAvailabilityExists(availabilityId))
                 return NotFound();
 
-            var availabilityMap = _mapper.Map<DoctorAvailability>(availabilityUpdated);
-            if (!_doctorAvailabilityRepository.UpdateAvailability(availabilityMap))
+            var availabilityMap = _mapper.Map<Availability>(availabilityUpdated);
+            if (!_availabilityRepository.UpdateAvailability(availabilityMap))
             {
                 ModelState.AddModelError("", "Something went wrong while updating.");
                 return StatusCode(500, ModelState);
@@ -121,15 +121,15 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(404)]
         public IActionResult DeleteAvailability(int availabilityId)
         {
-            if (!_doctorAvailabilityRepository.DoctorAvailabilityExists(availabilityId))
+            if (!_availabilityRepository.DoctorAvailabilityExists(availabilityId))
                 return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var availabilityToDelete = _doctorAvailabilityRepository.GetAvailability(availabilityId);
+            var availabilityToDelete = _availabilityRepository.GetAvailability(availabilityId);
             //var categoryMap = _mapper.Map
-            if (!_doctorAvailabilityRepository.DeleteAvailability(availabilityToDelete))
+            if (!_availabilityRepository.DeleteAvailability(availabilityToDelete))
             {
                 ModelState.AddModelError("", "Something wrong while deleting owner.");
                 return StatusCode(500, ModelState);

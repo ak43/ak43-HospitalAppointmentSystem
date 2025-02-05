@@ -5,34 +5,34 @@ using System.Numerics;
 
 namespace HospitalAppointmentSystem.Repositories
 {
-    public class DoctorAvailabilityRepository : IDoctorAvailabilityRepository
+    public class AvailabilityRepository : IAvailabilityRepository
     {
         private readonly DataContext _context;
 
-        public DoctorAvailabilityRepository(DataContext context)  
+        public AvailabilityRepository(DataContext context)  
         {
             _context = context;
         }
-        public ICollection<DoctorAvailability> GetAvailabilities()
+        public ICollection<Availability> GetAvailabilities()
         {
-            return _context.DoctorAvailabilities.OrderBy(a => a.DoctorId).ToList();
+            return _context.Availability.OrderBy(a => a.DoctorId).ToList();
         }
-        public DoctorAvailability GetAvailability(int Id)
+        public Availability GetAvailability(int Id)
         {
-            return _context.DoctorAvailabilities.Where(a => a.Id == Id).FirstOrDefault();
+            return _context.Availability.Where(a => a.Id == Id).FirstOrDefault();
         }
 
-        public ICollection<DoctorAvailability> GetAvailabilityByDoctor(int doctorId)
+        public ICollection<Availability> GetAvailabilityByDoctor(int doctorId)
         {
-            return _context.DoctorAvailabilities.Where(a => a.DoctorId == doctorId).ToList();        
+            return _context.Availability.Where(a => a.DoctorId == doctorId).ToList();        
         }
 
         public bool DoctorAvailabilityExists(int availabilityId)
         {
-            return _context.DoctorAvailabilities.Any(a => a.Id == availabilityId);
+            return _context.Availability.Any(a => a.Id == availabilityId);
         }
 
-        public bool SaveAvailability(DoctorAvailability doctorAvailability)
+        public bool SaveAvailability(Availability doctorAvailability)
         {
             //var doctorPatientntity = _context.Doctors.Where(a => a.Id == doctorId).FirstOrDefault();
             //_context.Add(doctorAvailability);
@@ -47,13 +47,13 @@ namespace HospitalAppointmentSystem.Repositories
             return Save();
         }
 
-        public bool UpdateAvailability(DoctorAvailability doctorAvailability)
+        public bool UpdateAvailability(Availability doctorAvailability)
         {
             _context.Update(doctorAvailability);
             return Save();
-        }
+        } 
 
-        public bool DeleteAvailability(DoctorAvailability doctorAvailability)
+        public bool DeleteAvailability(Availability doctorAvailability)
         {
             _context.Remove(doctorAvailability);
             return Save();

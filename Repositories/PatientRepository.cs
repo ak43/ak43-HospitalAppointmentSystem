@@ -73,5 +73,10 @@ namespace HospitalAppointmentSystem.Repositories
             _context.Update(Patient);
             return Save();
         }
+
+        public ICollection<Appointment> GetPatientAppointments(int patientId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

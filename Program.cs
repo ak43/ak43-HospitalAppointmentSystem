@@ -1,4 +1,5 @@
 using HospitalAppointmentSystem.Data;
+using HospitalAppointmentSystem.Filters;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Repositories;
 using Microsoft.EntityFrameworkCore;
@@ -9,11 +10,13 @@ var builder = WebApplication.CreateBuilder(args);
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
-builder.Services.AddControllers();
+builder.Services.AddControllers(option => 
+option.Filters.Add(new MyLogging()));
 builder.Services.AddScoped<IDoctorRepository, DoctorRepository>();
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IDepartmentRepository, DepartmentRepository>();
-builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
+builder.Services.AddScoped<IAvailabilityRepository, AvailabilityRepository>();
+builder.Services.AddScoped<IUserRepository, UserRepository>();
 //REgister AutoMapper with an application's Dependency Injection (DI)
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
@@ -22,6 +25,11 @@ builder.Services.AddDbContext<DataContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
 });
+
+//builder.Services.AddCors(options =>
+//{
+//    options.AddPolicy("");
+//});
 
 var app = builder.Build();
 

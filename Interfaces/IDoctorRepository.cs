@@ -11,7 +11,8 @@ namespace HospitalAppointmentSystem.Interfaces
         ICollection<Doctor> GetDoctorBySpeciality(string  speciality);
         ICollection<Doctor> GetDoctorByDepartment(int departmentName);
 
-       
+        // Get Doctor's Available dates and times
+        ICollection<Availability> GetDoctorAvailability(int doctorId);
 
         bool DoctorExists(int doctorId);
         bool CreateDoctor(Doctor doctor);

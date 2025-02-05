@@ -29,7 +29,7 @@ namespace HospitalAppointmentSystem.Controllers
                 return NotFound();
             return Ok(patients);
         }
-
+        // Route constraint {val: type} only accepts int as parentId
         [HttpGet("{patientId}")]
         [ProducesResponseType(200, Type = typeof(Patient))]
         [ProducesResponseType(400)]
