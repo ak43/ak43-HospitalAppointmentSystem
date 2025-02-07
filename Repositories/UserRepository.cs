@@ -29,7 +29,7 @@ namespace HospitalAppointmentSystem.Repositories
         public User GetUserByName(string firstName, string lastName)
         {
             return _context.Users
-                .Where(u => u.Person.FirstName == firstName && u.Person.LastName.Contains(lastName))
+                .Where(u => u.Person.FirstName.Contains(firstName) && u.Person.LastName.Contains(lastName))
                 .FirstOrDefault();
         }
         public bool UserExists(int userId)

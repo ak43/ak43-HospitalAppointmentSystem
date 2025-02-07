@@ -2,6 +2,7 @@
 using HospitalAppointmentSystem.Dto;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
+using HospitalAppointmentSystem.Repositories;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalAppointmentSystem.Controllers
@@ -63,7 +64,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("name/{firstName}&{lastName}")]
         [ProducesResponseType(200, Type = typeof(User))]
         [ProducesResponseType(400)]
-        public IActionResult GetUserUsername(string firstName, string lastName)
+        public IActionResult GetUsername(string firstName, string lastName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -98,17 +99,6 @@ namespace HospitalAppointmentSystem.Controllers
                 return StatusCode(422, ModelState);
             }
             var userMap = _mapper.Map<User>(userToSave);
-            // Can be deleted 
-            //if (user != null) 
-            //{
-            //    var user2 = _userRepository.GetUserByName(user.Person.FirstName, user.Person.LastName);
-            //    if (user2 != null)
-            //    {
-            //        ModelState.AddModelError("", "The person has existing user account.");
-            //        return StatusCode(422, ModelState);
-            //    }
-                
-            //}
             if (!ModelState.IsValid)
                 return BadRequest();
 
@@ -118,6 +108,52 @@ namespace HospitalAppointmentSystem.Controllers
                 return StatusCode(500, ModelState);
             }
             return Ok("User account created.");
+        }
+
+        [HttpPut("{userId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult UpdateDoctor(int userId, [FromBody] UserDto userUpdated)
+        {
+            if (userUpdated == null)
+                return BadRequest(ModelState);
+
+            if (userId != userUpdated.Id)
+                return BadRequest(ModelState);
+
+            if (!_userRepository.UserExists(userId))
+                return NotFound();
+
+            var userMap = _mapper.Map<User>(userUpdated);
+            if (!_userRepository.UpdateUser(userMap))
+            {
+                ModelState.AddModelError("", "Something went wrong while updating.");
+                return StatusCode(500, ModelState);
+            }
+            return NoContent();
+        }
+
+        [HttpDelete("{userId}")]
+        [ProducesResponseType(204)]
+        [ProducesResponseType(400)]
+        [ProducesResponseType(404)]
+        public IActionResult DeleteUser(int userId)
+        {
+            if (!_userRepository.UserExists(userId))
+                return NotFound();
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var userToDelete = _userRepository.GetUser(userId);
+            //var categoryMap = _mapper.Map
+            if (!_userRepository.DeleteUser(userToDelete))
+            {
+                ModelState.AddModelError("", "Something wrong while deleting user.");
+                return StatusCode(500, ModelState);
+            }
+            return Ok("Delete Succcess.");
         }
     }
 }

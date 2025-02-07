@@ -3,12 +3,15 @@ using HospitalAppointmentSystem.Dto;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
 using HospitalAppointmentSystem.Repositories;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Cors;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalAppointmentSystem.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
+    //[EnableCors("ApptCorsPolicy")]
     public class AvailabilityController : Controller
     {
         private readonly IAvailabilityRepository _availabilityRepository;
@@ -22,6 +25,7 @@ namespace HospitalAppointmentSystem.Controllers
         }
 
         [HttpGet]
+        [Authorize]
         [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
         [ProducesResponseType(400)]
         public IActionResult GetAllAvailabilities()
@@ -36,6 +40,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("{availabilityId}")]
         [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
         [ProducesResponseType(400)]
+        [Authorize(Roles = "Admin")]
         public IActionResult GetAvailability(int availabilityId)
         {
             if (!ModelState.IsValid)
@@ -131,7 +136,7 @@ namespace HospitalAppointmentSystem.Controllers
             //var categoryMap = _mapper.Map
             if (!_availabilityRepository.DeleteAvailability(availabilityToDelete))
             {
-                ModelState.AddModelError("", "Something wrong while deleting owner.");
+                ModelState.AddModelError("", "Something wrong while deleting availability.");
                 return StatusCode(500, ModelState);
             }
             return Ok("Delete Succcess.");
