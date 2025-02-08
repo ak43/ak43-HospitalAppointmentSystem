@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Serilog;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -44,42 +45,16 @@ builder.Services.AddCors(options =>
     .AllowAnyMethod()
     .AllowAnyHeader());
 });
-//builder.Services.AddIdentity<IdentityUser, IdentityRole>(options =>
-//{
-//    options.Password.RequiredLength = 6;
-//    options.Password.RequireNonAlphanumeric = true;
-//    options.Password.RequireDigit = false;
-//    options.Password.RequireLowercase = false;
-//    options.Password.RequireUppercase = false;
-//})
-//    .AddEntityFrameworkStores<DataContext>()
-//    .AddDefaultTokenProviders();
 
-//builder.Services.AddAuthentication(options =>
-//{
-//    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-//    options.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
-//})
-//    .AddJwtBearer(options =>
-//    {
-//        options.TokenValidationParameters = new TokenValidationParameters
-//        {
-//            ValidateIssuer = true,
-//            ValidateAudience = false,
-//            ValidateLifetime = true,
-//            ValidateIssuerSigningKey = true,
-//            ValidIssuer = builder.Configuration["Jwt:Issuer"],
-//            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
-//        };
-//    });
+// Step 1: Configure Serilog as the logger for the app
+// Customize Log Leve: Default: WriteTo.Console()
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Warning)
+    .WriteTo.File("logs/myapp.txt", rollingInterval: RollingInterval.Day)
+    .CreateLogger();
 
-//builder.Services.AddAuthorization(options =>
-//{
-//    options.AddPolicy("AdminPolicy", policy => policy.RequireRole("Admin"));
-//    options.AddPolicy("UserPolicy", policy => policy.RequireRole("User"));
-
-//});
+// Use Serilog for logging
+builder.Host.UseSerilog();
 
 var key = Encoding.ASCII.GetBytes(builder.Configuration["Jwt:Key"]);
 builder.Services.AddAuthentication(options =>

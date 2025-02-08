@@ -12,25 +12,33 @@ namespace HospitalAppointmentSystem.Controllers
     public class AuthController : Controller
     {
         private readonly JwtService _jwtService;
+        private readonly ILogger<AuthController> _logger;
         private readonly IUserRepository _userRepository;
 
-       public AuthController(JwtService jwtService, IUserRepository userRepository)
+       public AuthController(JwtService jwtService, ILogger<AuthController> logger,  IUserRepository userRepository)
         {
             _jwtService = jwtService;
+            _logger = logger;
             _userRepository = userRepository;
         }
 
         [HttpPost("login")]
         public IActionResult Login([FromBody] LoginRequest request)
         {
+            _logger.LogInformation(".... Trying to Login .....");
             // Validate user credetial 
             var user = _userRepository.GetUser(request.Username);
+            _logger.LogInformation("... trying to fetch user using username ....");
+
             //if (request.Username == "admin" && request.Password == "password")
             if (user != null && user.Password == request.Password)
             {
                 var token = _jwtService.GenerateToken(request.Username, "Admin");
+                _logger.LogInformation("... Login success! ..... Generating Token....");
                 return Ok(new { Token = token });
             }
+
+            _logger.LogInformation("ERR: Login not successful ...");
             return Unauthorized();
         }
 

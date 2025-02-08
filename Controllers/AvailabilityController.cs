@@ -15,12 +15,15 @@ namespace HospitalAppointmentSystem.Controllers
     public class AvailabilityController : Controller
     {
         private readonly IAvailabilityRepository _availabilityRepository;
+        private readonly ILogger<AvailabilityController> _logger;
         private readonly IMapper _mapper;
 
         public AvailabilityController(IAvailabilityRepository availabilityRepository,
+            ILogger<AvailabilityController> logger,
             IMapper mapper)
         {
             _availabilityRepository = availabilityRepository;
+            _logger = logger;
             _mapper = mapper;
         }
 
@@ -30,13 +33,18 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(400)]
         public IActionResult GetAllAvailabilities()
         {
+            _logger.LogInformation("Gettig all availabilities ... ");
             if (!ModelState.IsValid)
+                _logger.LogError("Bad State {ModelState}", ModelState);
                 return BadRequest(ModelState);
+
             var availabilities = _mapper.Map<List<AvailabilityDto>>(_availabilityRepository.GetAvailabilities());
             if (!availabilities.Any())
                 return NotFound();
+            _logger.LogInformation("Availabilities Found .... Returning....");
             return Ok(availabilities);
         }
+
         [HttpGet("{availabilityId}")]
         [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
         [ProducesResponseType(400)]
@@ -44,10 +52,13 @@ namespace HospitalAppointmentSystem.Controllers
         public IActionResult GetAvailability(int availabilityId)
         {
             if (!ModelState.IsValid)
+                _logger.LogError("Bad State {ModelState} ", ModelState);
                 return BadRequest(ModelState);
             var availabilities = _mapper.Map<AvailabilityDto>(_availabilityRepository.GetAvailability(availabilityId));
             if (availabilities == null)
                 return NotFound();
+
+            _logger.LogInformation("Availability Found ........");
             return Ok(availabilities);
         }
 
