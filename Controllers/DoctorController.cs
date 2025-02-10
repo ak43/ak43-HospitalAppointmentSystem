@@ -2,12 +2,14 @@
 using HospitalAppointmentSystem.Dto;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalAppointmentSystem.Controllers
 { 
     [Route("/api/[controller]")]
     [ApiController]
+    [Authorize]
     public class DoctorController : Controller 
     {
         private readonly IDoctorRepository _doctorRepository;
@@ -19,9 +21,9 @@ namespace HospitalAppointmentSystem.Controllers
         }
 
         [HttpGet]
-            [ProducesResponseType(200, Type = typeof(ICollection<DoctorDto>))]
-        [ProducesResponseType(400)]    
-            public IActionResult GetDoctors()
+        [ProducesResponseType(200, Type = typeof(ICollection<DoctorDto>))]
+        [ProducesResponseType(400)]   
+        public IActionResult GetDoctors()
             {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -86,6 +88,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [Authorize(Roles = "Admin")]
         public IActionResult SaveDoctor([FromBody] DoctorDto doctorToSave)
         {
             if (doctorToSave == null)
@@ -116,6 +119,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin, Doctor")]
         public IActionResult UpdateDoctor(int doctorId, [FromBody] DoctorDto doctorUpdated)
         {
             if (doctorUpdated == null)
@@ -140,6 +144,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteDoctor(int doctorId)
         {
             if (!_doctorRepository.DoctorExists(doctorId))

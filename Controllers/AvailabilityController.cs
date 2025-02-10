@@ -11,6 +11,7 @@ namespace HospitalAppointmentSystem.Controllers
 {
     [ApiController]
     [Route("/api/[controller]")]
+    [Authorize]
     //[EnableCors("ApptCorsPolicy")]
     public class AvailabilityController : Controller
     {
@@ -28,16 +29,16 @@ namespace HospitalAppointmentSystem.Controllers
         }
 
         [HttpGet]
-        [Authorize]
-        [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
+        [ProducesResponseType(200, Type = typeof(ICollection<AvailabilityDto>))]
         [ProducesResponseType(400)]
         public IActionResult GetAllAvailabilities()
         {
             _logger.LogInformation("Gettig all availabilities ... ");
             if (!ModelState.IsValid)
+            {
                 _logger.LogError("Bad State {ModelState}", ModelState);
                 return BadRequest(ModelState);
-
+            }
             var availabilities = _mapper.Map<List<AvailabilityDto>>(_availabilityRepository.GetAvailabilities());
             if (!availabilities.Any())
                 return NotFound();
@@ -46,14 +47,15 @@ namespace HospitalAppointmentSystem.Controllers
         }
 
         [HttpGet("{availabilityId}")]
-        [ProducesResponseType(200, Type = typeof(ICollection<Availability>))]
+        [ProducesResponseType(200, Type = typeof(ICollection<AvailabilityDto>))]
         [ProducesResponseType(400)]
-        [Authorize(Roles = "Admin")]
         public IActionResult GetAvailability(int availabilityId)
         {
             if (!ModelState.IsValid)
+            {
                 _logger.LogError("Bad State {ModelState} ", ModelState);
                 return BadRequest(ModelState);
+            }
             var availabilities = _mapper.Map<AvailabilityDto>(_availabilityRepository.GetAvailability(availabilityId));
             if (availabilities == null)
                 return NotFound();
@@ -78,6 +80,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [Authorize(Roles = "Doctor")]
         public IActionResult SaveAvailability([FromBody] AvailabilityDto availabilityToSave)
         {
             if (availabilityToSave == null)
@@ -111,7 +114,8 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateDoctor(int availabilityId, [FromBody] AvailabilityDto availabilityUpdated)
+        [Authorize(Roles = "Doctor")]
+        public IActionResult UpdateAvailability(int availabilityId, [FromBody] AvailabilityDto availabilityUpdated)
         {
             if (availabilityUpdated == null)
                 return BadRequest(ModelState);
@@ -135,6 +139,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteAvailability(int availabilityId)
         {
             if (!_availabilityRepository.DoctorAvailabilityExists(availabilityId))

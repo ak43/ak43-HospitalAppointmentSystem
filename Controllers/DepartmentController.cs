@@ -3,6 +3,7 @@ using HospitalAppointmentSystem.Dto;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
 using HospitalAppointmentSystem.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalAppointmentSystem.Controllers
@@ -50,6 +51,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [Authorize(Roles = "Admin")]
         public IActionResult SaveDepartment([FromBody] DepartmentDto departmentToSave)
         {
             if (departmentToSave == null)
@@ -78,6 +80,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult UpdateDepartment(int departmentId, [FromBody] DepartmentDto departmentUpdated)
         {
             if (departmentUpdated == null)
@@ -102,6 +105,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteDepartment(int departmentId)
         {
             if (!_departmentRepository.DepartmentExists(departmentId))

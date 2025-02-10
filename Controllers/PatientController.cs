@@ -3,6 +3,7 @@ using HospitalAppointmentSystem.Dto;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
 using HospitalAppointmentSystem.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalAppointmentSystem.Controllers
@@ -21,6 +22,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(ICollection<PatientDto>))]
         [ProducesResponseType(400)]
+        [Authorize]
         public IActionResult GetPatients() {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -33,6 +35,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("{patientId}")]
         [ProducesResponseType(200, Type = typeof(Patient))]
         [ProducesResponseType(400)]
+        [Authorize]
         public IActionResult GetPatient(int patientId)
         {
             if (!_patientRepository.PatientExists(patientId))
@@ -46,6 +49,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("name/{firstName}")]
         [ProducesResponseType(200, Type = typeof(ICollection<Doctor>))]
         [ProducesResponseType(400)]
+        [Authorize]
         public IActionResult GetPatientByName(string firstName)
         {
             if (!ModelState.IsValid)
@@ -59,6 +63,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("dept/{deptId}")]
         [ProducesResponseType(200, Type = typeof(ICollection<Patient>))]
         [ProducesResponseType(400)]
+        [Authorize]
         public IActionResult GetPatients(int deptId)
         {
             if (!ModelState.IsValid)
@@ -72,6 +77,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
+        [Authorize(Roles = "Admin")]
         public IActionResult SavePatient(int doctorId, [FromBody] PatientDto patientToSave) 
         {
             if (patientToSave == null)
@@ -105,6 +111,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult UpdateDoctor(int patientId, [FromBody] PatientDto patientUpdated)
         {
             if (patientUpdated == null)
@@ -129,6 +136,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeletePatient(int patientId)
         {
             if (!_patientRepository.PatientExists(patientId))

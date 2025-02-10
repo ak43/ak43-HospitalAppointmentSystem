@@ -15,7 +15,8 @@ namespace HospitalAppointmentSystem.Repositories
         }
         public ICollection<Availability> GetAvailabilities()
         {
-            return _context.Availability.OrderBy(a => a.DoctorId).ToList();
+            // return _context.Availability.OrderBy(a => a.DoctorId).ToList();
+            return _context.Availability.ToList();
         }
         public Availability GetAvailability(int Id)
         {

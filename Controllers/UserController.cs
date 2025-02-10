@@ -3,6 +3,7 @@ using HospitalAppointmentSystem.Dto;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
 using HospitalAppointmentSystem.Repositories;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HospitalAppointmentSystem.Controllers
@@ -22,6 +23,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(ICollection<UserDto>))]
         [ProducesResponseType(400)]
+        [Authorize(Roles ="Admin")]
         public IActionResult GetUsers()
         {
             if(!ModelState.IsValid)
@@ -36,6 +38,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("{userId}")]
         [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
+        [Authorize]
         public IActionResult GetUser(int userId)
         {
             if (!ModelState.IsValid)
@@ -49,6 +52,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("username/{username}")]
         [ProducesResponseType(200, Type = typeof(UserDto))]
         [ProducesResponseType(400)]
+        [Authorize]
         public IActionResult GetUser(string username)
         {
             if (!ModelState.IsValid)
@@ -64,6 +68,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("name/{firstName}&{lastName}")]
         [ProducesResponseType(200, Type = typeof(User))]
         [ProducesResponseType(400)]
+        [Authorize]
         public IActionResult GetUsername(string firstName, string lastName)
         {
             if (!ModelState.IsValid)
@@ -78,6 +83,7 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(204)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult SaveUser([FromBody] UserDto userToSave )
         {
             if (userToSave == null)
@@ -114,7 +120,8 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
-        public IActionResult UpdateDoctor(int userId, [FromBody] UserDto userUpdated)
+        [Authorize(Roles = "Admin")]
+        public IActionResult UpdateUser(int userId, [FromBody] UserDto userUpdated)
         {
             if (userUpdated == null)
                 return BadRequest(ModelState);
@@ -138,6 +145,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(204)]
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
+        [Authorize(Roles = "Admin")]
         public IActionResult DeleteUser(int userId)
         {
             if (!_userRepository.UserExists(userId))
