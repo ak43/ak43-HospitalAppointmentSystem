@@ -33,7 +33,8 @@ namespace HospitalAppointmentSystem.Controllers
             //if (request.Username == "admin" && request.Password == "password")
             if (user != null && user.Password == request.Password)
             {
-                var token = _jwtService.GenerateToken(request.Username, "Admin");
+                var token = _jwtService.GenerateToken(request.Username, user.Role);
+                _logger.LogInformation(".......... Role of loggedin User .... {role}", user.Role);
                 _logger.LogInformation("... Login success! ..... Generating Token....");
                 return Ok(new { Token = token });
             }
