@@ -24,12 +24,12 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(ICollection<DepartmentDto>))]
         [ProducesResponseType(400)]
-        public IActionResult GetDepartments()
+        public async Task<IActionResult> GetDepartments()
         {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var departments = _mapper.Map<List<DepartmentDto>>(_departmentRepository.GetDepartments());
+            var departments = _mapper.Map<List<DepartmentDto>>(await _departmentRepository.GetDepartments());
             if(departments == null) 
                 return NotFound();
             return Ok(departments);
@@ -38,12 +38,12 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("{departmentId}")]
         [ProducesResponseType(200, Type = typeof(DepartmentDto))]
         [ProducesResponseType(400)]
-        public IActionResult GetDepartment(int departmentId) {
+        public async Task<IActionResult> GetDepartment(int departmentId) {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            if (!_departmentRepository.DepartmentExists(departmentId))
+            if (!await _departmentRepository.DepartmentExists(departmentId))
                 return NotFound();
-            var department = _mapper.Map<DepartmentDto>(_departmentRepository.GetDepartment(departmentId));
+            var department = _mapper.Map<DepartmentDto>(await _departmentRepository.GetDepartment(departmentId));
             //if(department != null)
                 return Ok(department);
         }
@@ -51,15 +51,18 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpPost]
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
-        [Authorize(Roles = "Admin")]
-        public IActionResult SaveDepartment([FromBody] DepartmentDto departmentToSave)
+        //[Authorize(Roles = "Admin")]
+        public async Task<IActionResult> SaveDepartment([FromBody] DepartmentDto departmentToSave)
         {
             if (departmentToSave == null)
                 return BadRequest(ModelState);
 
-            var department = _departmentRepository.GetDepartments().Where(p => p.Name.Trim().ToUpper() == departmentToSave.Name.Trim().ToUpper());
+            var departments = await _departmentRepository.GetDepartments();
+            var department =  departments.Where(d => d.Name.Trim().ToUpper() == departmentToSave.Name.Trim().ToUpper());
+                //.FirstOrDefaultAsync();
 
-            if (department.Any())
+
+            if ( department.Any())
             {
                 ModelState.AddModelError("", "Department with the same name already exists");
                 return StatusCode(422, ModelState);
@@ -68,12 +71,14 @@ namespace HospitalAppointmentSystem.Controllers
                 return BadRequest(ModelState);
 
             var departmentMap = _mapper.Map<Department>(departmentToSave);
-            if (!_departmentRepository.SaveDepartment(departmentMap))
+            if (!await _departmentRepository.SaveDepartment(departmentMap))
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
             }
-            return Ok("Successfully created.");
+            //return Ok("Successfully created.");
+            return Ok();
+
         }
 
         [HttpPut("{departmentId}")]
@@ -81,7 +86,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [Authorize(Roles = "Admin")]
-        public IActionResult UpdateDepartment(int departmentId, [FromBody] DepartmentDto departmentUpdated)
+        public async Task<IActionResult> UpdateDepartment(int departmentId, [FromBody] DepartmentDto departmentUpdated)
         {
             if (departmentUpdated == null)
                 return BadRequest(ModelState);
@@ -89,11 +94,11 @@ namespace HospitalAppointmentSystem.Controllers
             if (departmentId != departmentUpdated.Id)
                 return BadRequest(ModelState);
 
-            if (!_departmentRepository.DepartmentExists(departmentId))
+            if (!await _departmentRepository.DepartmentExists(departmentId))
                 return NotFound();
 
-            var departmentMap = _mapper.Map<Department>(departmentUpdated);
-            if (!_departmentRepository.UpdateDepartment(departmentMap))
+            var departmentMap =  _mapper.Map<Department>(departmentUpdated);
+            if (!await _departmentRepository.UpdateDepartment(departmentMap))
             {
                 ModelState.AddModelError("", "Something went wrong while updating.");
                 return StatusCode(500, ModelState);
@@ -106,17 +111,17 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteDepartment(int departmentId)
+        public async Task<IActionResult> DeleteDepartment(int departmentId)
         {
-            if (!_departmentRepository.DepartmentExists(departmentId))
+            if (!await _departmentRepository.DepartmentExists(departmentId))
                 return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var departmentToDelete = _departmentRepository.GetDepartment(departmentId);
+            var departmentToDelete = await _departmentRepository.GetDepartment(departmentId);
             var departmentMap = _mapper.Map<Department>(departmentToDelete);
-            if (!_departmentRepository.DeleteDepartment(departmentMap))
+            if (!await _departmentRepository.DeleteDepartment(departmentMap))
             {
                 ModelState.AddModelError("", "Something wrong while deleting owner.");
                 return StatusCode(500, ModelState);

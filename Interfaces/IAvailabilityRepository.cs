@@ -4,13 +4,13 @@ namespace HospitalAppointmentSystem.Interfaces
 {
     public interface IAvailabilityRepository
     {
-        public ICollection<Availability> GetAvailabilities();
-        public Availability GetAvailability(int Id);
-        public ICollection<Availability> GetAvailabilityByDoctor(int doctorId);
-        public bool DoctorAvailabilityExists(int availabilityId);
-        public bool SaveAvailability(Availability doctorAvailability);
-        public bool UpdateAvailability(Availability doctorAvailability);
-        public bool DeleteAvailability(Availability doctorAvailability);
-        public bool Save();
+        public Task<ICollection<Availability>> GetAvailabilities();
+        public Task<Availability> GetAvailability(int Id);
+        public Task<ICollection<Availability>> GetAvailabilityByDoctor(int doctorId);
+        public Task<bool> DoctorAvailabilityExists(int availabilityId);
+        public Task<bool> SaveAvailability(Availability doctorAvailability);
+        public Task<bool> UpdateAvailability(Availability doctorAvailability);
+        public Task<bool> DeleteAvailability(Availability doctorAvailability);
+        public Task<bool> Save();
     }
 }

@@ -4,21 +4,21 @@ namespace HospitalAppointmentSystem.Interfaces
 {
     public interface IPatientRepository
     {
-        ICollection<Patient> GetPatients();
-        Patient GetPatient(int patientId);
-        ICollection<Patient> GetPatients(string name);
+        Task<ICollection<Patient>> GetPatients();
+        Task<Patient> GetPatient(int patientId);
+        Task<ICollection<Patient>> GetPatients(string name);
 
-        ICollection<Patient> GetPatientByDepartment(int departmentName);
+        Task<ICollection<Patient>> GetPatientByDepartment(int departmentName);
 
         // Task<IEnumerable<Appointment>> GetPatientAppointmentsAsync(int patientId);
-        ICollection<Appointment> GetPatientAppointments(int patientId);
-        bool PatientExists(int PatientId);
-        bool SavePatient(int doctorId, Patient Patient);
+        Task<ICollection<Appointment>> GetPatientAppointments(int patientId);
+        Task<bool> PatientExists(int PatientId);
+        Task<bool> SavePatient(int doctorId, Patient Patient);
         //bool CreatePatient(int departmentId, Patient Patient);
 
-        bool UpdatePatient(Patient Patient);
-        bool DeletePatient(Patient Patient);
-        bool Save();
+        Task<bool> UpdatePatient(Patient Patient);
+        Task<bool> DeletePatient(Patient Patient);
+        Task<bool> Save();
 
     }
 }

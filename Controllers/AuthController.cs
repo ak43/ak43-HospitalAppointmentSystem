@@ -14,8 +14,10 @@ namespace HospitalAppointmentSystem.Controllers
         private readonly JwtService _jwtService;
         private readonly ILogger<AuthController> _logger;
         private readonly IUserRepository _userRepository;
+        private static readonly HashSet<string> _blacklistedTokens = new HashSet<string>();
 
-       public AuthController(JwtService jwtService, ILogger<AuthController> logger,  IUserRepository userRepository)
+
+        public AuthController(JwtService jwtService, ILogger<AuthController> logger,  IUserRepository userRepository)
         {
             _jwtService = jwtService;
             _logger = logger;
@@ -23,11 +25,11 @@ namespace HospitalAppointmentSystem.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             _logger.LogInformation(".... Trying to Login .....");
             // Validate user credetial 
-            var user = _userRepository.GetUser(request.Username);
+            var user = await _userRepository.GetUser(request.Username);
             _logger.LogInformation("... trying to fetch user using username ....");
 
             //if (request.Username == "admin" && request.Password == "password")
@@ -43,15 +45,17 @@ namespace HospitalAppointmentSystem.Controllers
             return Unauthorized();
         }
 
-        //public User CheckUser(LoginRequest request)
-        //{
-        //    var user = _userRepository.GetUser(request.Username);
-        //    if (user.Password == request.Password)
-        //        return user;
-        //    return null;
-        //}
+        [HttpPost("logout")]
+        public IActionResult Logout()
+        {
+            var token = Request.Headers["Authorization"].ToString().Replace("Bearer ", "");
+            // Add the token to the list of blacklisted tokens
+            _blacklistedTokens.Add(token);
 
+            return Ok(new { Token = "", message = "Logged out successfully."});
+        }
     }
+
     public class LoginRequest
     {
         public string Username { get; set; }

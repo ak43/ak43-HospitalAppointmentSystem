@@ -4,12 +4,12 @@ namespace HospitalAppointmentSystem.Interfaces
 {
     public interface IDepartmentRepository
     {
-        public ICollection<Department> GetDepartments();
-        public Department GetDepartment(int departmentId);
-        public bool DepartmentExists(int departmentId);
-        public bool SaveDepartment(Department departmentToSave);
-        public bool UpdateDepartment(Department departmetnUpdated);
-        public bool DeleteDepartment(Department departmentToDelete);
-        public bool Save();
+        public  Task<ICollection<Department>> GetDepartments();
+        public  Task<Department> GetDepartment(int departmentId);
+        public  Task<bool> DepartmentExists(int departmentId);
+        public  Task<bool> SaveDepartment(Department departmentToSave);
+        public  Task<bool> UpdateDepartment(Department departmetnUpdated);
+        public  Task<bool> DeleteDepartment(Department departmentToDelete);
+        public Task<bool> Save();
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HospitalAppointmentSystem.Data;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalAppointmentSystem.Repositories
 {
@@ -11,38 +12,44 @@ namespace HospitalAppointmentSystem.Repositories
         {
         _context = context;
         }
-        public ICollection<Department> GetDepartments()
+        public async Task<ICollection<Department>> GetDepartments()
         {
-            return _context.Departments.OrderBy(d => d.Name).ToList();
+            //return await _context.Departments.ToListAsync();
+            return await _context.Departments.OrderBy(d => d.Name).ToListAsync();
+
         }
-        public Department GetDepartment(int departmentId)
+        public async Task<Department> GetDepartment(int departmentId)
         {
-            return _context.Departments.Where(d => d.Id == departmentId).FirstOrDefault();        }
-
-        public bool DepartmentExists(int departmentId)
-        {
-            return _context.Departments.Any(d => d.Id == departmentId);
+            return await _context.Departments
+                .Where(d => d.Id == departmentId)
+                .FirstOrDefaultAsync();
         }
 
-        public bool SaveDepartment(Department department)
+        public async Task<bool> DepartmentExists(int departmentId)
         {
-            _context.Add(department);
-        return Save();}
+            return await _context.Departments.AnyAsync(d => d.Id == departmentId);
+        }
 
-        public bool UpdateDepartment(Department department)
+        public async Task<bool> SaveDepartment(Department department)
+        {
+            await _context.AddAsync(department);
+            return await Save();
+        }
+
+        public async Task<bool> UpdateDepartment(Department department)
         {
             _context.Update(department);
-            return Save();
+            return await Save();
         }
-        public bool DeleteDepartment(Department department)
+        public async Task<bool> DeleteDepartment(Department department)
         {
             _context.Remove(department);
-            return Save();
+            return await Save();
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0 ? true : false;
         }
     }

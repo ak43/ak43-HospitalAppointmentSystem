@@ -1,6 +1,7 @@
 ﻿using HospitalAppointmentSystem.Data;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalAppointmentSystem.Repositories
 {
@@ -12,108 +13,86 @@ namespace HospitalAppointmentSystem.Repositories
         {
             _context = context;
         }
-        public ICollection<Doctor> GetDoctors()
+        public async Task<ICollection<Doctor>> GetDoctors()
         {
-            return _context.Doctors.OrderBy(d => d.FirstName).ToList();
-            //return _context.Doctors.ToList();
+            return await _context.Doctors.OrderBy(d => d.FirstName).ToListAsync();
         }
 
-        public Doctor GetDoctor(int doctorID)
+        public async Task<Doctor> GetDoctor(int doctorID)
         {
-            return _context.Doctors.Where(d => d.Id == doctorID).FirstOrDefault();
+            return await _context.Doctors.Where(d => d.Id == doctorID).FirstOrDefaultAsync();
         }
 
-        public ICollection<Doctor> GetDoctors(string firstName)
+        public async Task<ICollection<Doctor>> GetDoctors(string firstName)
         {
-            return _context.Doctors.Where(d => d.FirstName.Contains(firstName)).ToList();
+            return await _context.Doctors.Where(d => d.FirstName.Contains(firstName)).ToListAsync();
         }
 
-        public ICollection<Doctor> GetDoctorByDepartment(int departmentId)
+        public async Task<ICollection<Doctor>> GetDoctorByDepartment(int departmentId)
         {
-            return _context.Doctors.Where(d => d.DepartmentId == departmentId).ToList();
+            return await _context.Doctors.Where(d => d.DepartmentId == departmentId).ToListAsync();
         }
 
-        public ICollection<Doctor> GetDoctorBySpeciality(string speciality)
+        public async Task<ICollection<Doctor>> GetDoctorBySpeciality(string speciality)
         {
-            return _context.Doctors.Where(d => d.Specialization == speciality).ToList();
+            return await _context.Doctors.Where(d => d.Specialization == speciality).ToListAsync();
         }
 
-        public bool CreateDoctor(Doctor doctor)
+        public async Task<bool> CreateDoctor(Doctor doctor)
         {
-            //var pokemonOwnerEntity = _context.Owners.Where(a => a.Id == ownerId).FirstOrDefault();
-            //var category = _context.Categories.Where(a => a.Id == categoryId).FirstOrDefault();
 
-            //var pokemonOwner = new PokemonOwner
-            //{
-            //    Owner = pokemonOwnerEntity,
-            //    Pokemon = pokemon
-            //};
-
-            //_context.Add(pokemonOwner);
-
-            //var pokemonCategory = new PokemonCategory
-            //{
-            //    Category = category,
-            //    Pokemon = pokemon
-            //};
-
-            //_context.Add(pokemonCategory);
-
-            //_context.Add(pokemon);
-            //return Save();
-
-            _context.Add(doctor);
-            return Save();
+           await _context.AddAsync(doctor);
+            return await Save();
         }
 
 
-        public bool UpdateDoctor(Doctor doctor)
+        public async Task<bool> UpdateDoctor(Doctor doctor)
         {
-            _context.Update(doctor);
-            return Save();
+             _context.Update(doctor);
+            return await Save();
         }
 
-        public bool DeleteDoctor(Doctor doctor)
+        public async Task<bool> DeleteDoctor(Doctor doctor)
         {
             _context.Remove(doctor);
-            return Save();
+            return await Save();
         }
 
-        public bool DoctorExists(int doctorId)
+        public async Task<bool> DoctorExists(int doctorId)
         {
-            return _context.Doctors.Any(d => d.Id == doctorId);
+            return await _context.Doctors.AnyAsync(d => d.Id == doctorId);
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0 ? true : false;
         }
-        public ICollection<Appointment> GetAppointments()
+        public async Task<ICollection<Appointment>> GetAppointments()
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<Appointment> GetAppointments(int doctorId)
+        public async Task<ICollection<Appointment>> GetAppointments(int doctorId)
         {
             throw new NotImplementedException();
         }
 
-        public bool SetAvailability(int doctorId, string availability)
+        public async Task<bool> SetAvailability(int doctorId, string availability)
         {
             throw new NotImplementedException();
         }
 
-        public bool UpdateAvailability(int doctorId, string availability)
+        public async Task<bool> UpdateAvailability(int doctorId, string availability)
         {
             throw new NotImplementedException();
         }
-        public bool DeleteAvailability(int doctorId)
+        public async Task<bool> DeleteAvailability(int doctorId)
         {
             throw new NotImplementedException();
         }
 
-        public ICollection<Availability> GetDoctorAvailability(int doctorId)
+        public async Task<ICollection<Availability>> GetDoctorAvailability(int doctorId)
         {
             throw new NotImplementedException();
         }

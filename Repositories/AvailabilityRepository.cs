@@ -1,6 +1,7 @@
 ﻿using HospitalAppointmentSystem.Data;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
+using Microsoft.EntityFrameworkCore;
 using System.Numerics;
 
 namespace HospitalAppointmentSystem.Repositories
@@ -13,27 +14,29 @@ namespace HospitalAppointmentSystem.Repositories
         {
             _context = context;
         }
-        public ICollection<Availability> GetAvailabilities()
+        public async Task<ICollection<Availability>> GetAvailabilities()
         {
             // return _context.Availability.OrderBy(a => a.DoctorId).ToList();
-            return _context.Availability.ToList();
-        }
-        public Availability GetAvailability(int Id)
-        {
-            return _context.Availability.Where(a => a.Id == Id).FirstOrDefault();
+            return await _context.Availability.ToListAsync();
         }
 
-        public ICollection<Availability> GetAvailabilityByDoctor(int doctorId)
+        public async Task<Availability> GetAvailability(int Id)
         {
-            return _context.Availability.Where(a => a.DoctorId == doctorId).ToList();        
+            return await _context.Availability.Where(a => a.Id == Id).FirstOrDefaultAsync();
+            //return availability;
         }
 
-        public bool DoctorAvailabilityExists(int availabilityId)
+        public async Task<ICollection<Availability>> GetAvailabilityByDoctor(int doctorId)
         {
-            return _context.Availability.Any(a => a.Id == availabilityId);
+            return await _context.Availability.Where(a => a.DoctorId == doctorId).ToListAsync();        
         }
 
-        public bool SaveAvailability(Availability doctorAvailability)
+        public async Task<bool> DoctorAvailabilityExists(int availabilityId)
+        {
+            return await _context.Availability.AnyAsync(a => a.Id == availabilityId);
+        }
+
+        public async Task<bool> SaveAvailability(Availability doctorAvailability)
         {
             //var doctorPatientntity = _context.Doctors.Where(a => a.Id == doctorId).FirstOrDefault();
             //_context.Add(doctorAvailability);
@@ -44,26 +47,28 @@ namespace HospitalAppointmentSystem.Repositories
             //};
             //_context.Add(docPatient);
 
-            _context.Add(doctorAvailability);
-            return Save();
+            await _context.AddAsync(doctorAvailability);
+            return await Save();
         }
 
-        public bool UpdateAvailability(Availability doctorAvailability)
+        public async Task<bool> UpdateAvailability(Availability doctorAvailability)
         {
-            _context.Update(doctorAvailability);
-            return Save();
+             _context.Update(doctorAvailability);
+            return await Save();
         } 
 
-        public bool DeleteAvailability(Availability doctorAvailability)
+        public async Task<bool> DeleteAvailability(Availability doctorAvailability)
         {
             _context.Remove(doctorAvailability);
-            return Save();
+            return await Save();
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0 ? true : false;
         }
+
+       
     }
 }

@@ -1,6 +1,7 @@
 ﻿using HospitalAppointmentSystem.Data;
 using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace HospitalAppointmentSystem.Repositories
 {
@@ -13,57 +14,61 @@ namespace HospitalAppointmentSystem.Repositories
             _context = context;
         }
 
-        public ICollection<User> GetUsers()
+        public async Task<ICollection<User>> GetUsers()
         {
-            return _context.Users.OrderBy(u => u.Username).ToList();
+            return await _context.Users.OrderBy(u => u.Username).ToListAsync();
         }
-        public User GetUser(int userId)
+        public async Task<User> GetUser(int userId)
         {
-            return _context.Users.Where(u => u.Id == userId).FirstOrDefault();
+            return await _context.Users.Where(u => u.Id == userId).FirstOrDefaultAsync();
         }
 
-        public User GetUser(string username)
+        public async Task<User> GetUser(string username)
         {
-            return _context.Users.Where(u => u.Username == username).FirstOrDefault();
+            return await _context.Users
+                .Where(u => u.Username == username)
+                .FirstOrDefaultAsync();
         }
-        public User GetUserByName(string firstName, string lastName)
+        public async Task<User> GetUserByName(string firstName, string lastName)
         {
-            return _context.Users
+            return await _context.Users
                 .Where(u => u.Person.FirstName.Contains(firstName) && u.Person.LastName.Contains(lastName))
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
-        public bool UserExists(int userId)
+        public async Task<bool> UserExists(int userId)
         {
-            return _context.Users.Any(u => u.Id == userId);
+            //var users = await _context.Users.Any(u => u.Id ==  userId);
+
+            return await _context.Users.AnyAsync(u => u.Id == userId);
         }
 
-        public bool SaveUser(User user)
+        public async Task<bool> SaveUser(User user)
         {
-            _context.Users.Add(user);
-        return Save();
+            await _context.Users.AddAsync(user);
+        return await Save();
         }
 
-        public bool UpdateUser(User user)
+        public async Task<bool> UpdateUser(User user)
         {
             _context.Users.Update(user);
-            return Save();
+            return await Save();
         }
 
-        public bool DeleteUser(User user)
+        public async Task<bool> DeleteUser(User user)
         {
             _context.Users.Remove(user);
-            return Save();
+            return await Save();
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0 ? true : false;
         }
 
-        public User GetUserByPerson(int personId)
+        public async Task<User> GetUserByPerson(int personId)
         {
-            return _context.Users.Where(u => u.PersonId == personId).FirstOrDefault();
+            return await _context.Users.Where(u => u.PersonId == personId).FirstOrDefaultAsync();
                 }
     }
 }

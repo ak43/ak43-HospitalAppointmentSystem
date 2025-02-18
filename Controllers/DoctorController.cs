@@ -4,6 +4,7 @@ using HospitalAppointmentSystem.Interfaces;
 using HospitalAppointmentSystem.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System.Numerics;
 
 namespace HospitalAppointmentSystem.Controllers
 { 
@@ -23,11 +24,11 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet]
         [ProducesResponseType(200, Type = typeof(ICollection<DoctorDto>))]
         [ProducesResponseType(400)]   
-        public IActionResult GetDoctors()
+        public async Task<IActionResult> GetDoctors()
             {
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var doctors = _mapper.Map<List<DoctorDto>>(_doctorRepository.GetDoctors());
+            var doctors = _mapper.Map<List<DoctorDto>>(await _doctorRepository.GetDoctors());
             if (doctors.Count == 0)
                 return NotFound();
             return Ok(doctors);
@@ -36,25 +37,25 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("{doctorId}")]
         [ProducesResponseType(200, Type = typeof(Doctor))]
         [ProducesResponseType(400)]
-        public IActionResult GetDoctor (int doctorId)
+        public async Task<IActionResult> GetDoctor (int doctorId)
         {
-            if (!_doctorRepository.DoctorExists(doctorId))
+            if (!await _doctorRepository.DoctorExists(doctorId))
                 return NotFound();
             if(!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var doctor = _mapper.Map<DoctorDto>(_doctorRepository.GetDoctor(doctorId));
+            var doctor = _mapper.Map<DoctorDto>(await _doctorRepository.GetDoctor(doctorId));
             return Ok(doctor);
         }
 
         [HttpGet("name/{firstName}")]
         [ProducesResponseType(200, Type = typeof(Doctor))]
         [ProducesResponseType(400)]
-        public IActionResult GetDoctorByName(string firstName)
+        public async Task<IActionResult> GetDoctorByName(string firstName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var doctors = _mapper.Map<List<DoctorDto>>(_doctorRepository.GetDoctors(firstName));
-            if (doctors.Count ==0)
+            var doctors = _mapper.Map<List<DoctorDto>>(await _doctorRepository.GetDoctors(firstName));
+            if (doctors.Count == 0)
                 return NotFound();
             return Ok(doctors);
         }
@@ -62,11 +63,11 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("dept/{deptId}")]
         [ProducesResponseType(200, Type = typeof(ICollection<Doctor>))]
         [ProducesResponseType(400)]
-        public IActionResult GetDoctors(int deptId)
+        public async Task<IActionResult> GetDoctors(int deptId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var doctors = _mapper.Map<List<DoctorDto>>(_doctorRepository.GetDoctorByDepartment(deptId));
+            var doctors = _mapper.Map<List<DoctorDto>>(await _doctorRepository.GetDoctorByDepartment(deptId));
             if (doctors.Count == 0)
                 return NotFound();
             return Ok(doctors);
@@ -75,11 +76,11 @@ namespace HospitalAppointmentSystem.Controllers
         [HttpGet("specialty/{specialty}")]
         [ProducesResponseType(200, Type = typeof(Doctor))]
         [ProducesResponseType(400)]
-        public IActionResult GetDoctors(string specialty)
+        public async Task<IActionResult> GetDoctors(string specialty)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var doctors = _mapper.Map<List<DoctorDto>>(_doctorRepository.GetDoctorBySpeciality(specialty));
+            var doctors = _mapper.Map<List<DoctorDto>>(await _doctorRepository.GetDoctorBySpeciality(specialty));
             if (doctors.Count == 0)
                 return NotFound();
             return Ok(doctors);
@@ -89,11 +90,17 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [Authorize(Roles = "Admin")]
-        public IActionResult SaveDoctor([FromBody] DoctorDto doctorToSave)
+        public async Task<IActionResult> SaveDoctor([FromBody] DoctorDto doctorToSave)
         {
             if (doctorToSave == null)
                 return BadRequest(ModelState);
-            var doctor = _doctorRepository.GetDoctors().Where(d => d.FirstName.Trim().ToUpper() == doctorToSave.FirstName.Trim().ToUpper() &&
+            //var doctor = await _doctorRepository.GetDoctors().Where(d => d.FirstName.Trim().ToUpper() == doctorToSave.FirstName.Trim().ToUpper() &&
+            //d.LastName.Trim().ToUpper() == doctorToSave.LastName.Trim().ToUpper() &&
+            //d.Specialization == doctorToSave.Specialization.Trim().ToUpper()).ToList();
+
+            var doctors = await _doctorRepository.GetDoctors();
+
+            var doctor = doctors.Where(d => d.FirstName.Trim().ToUpper() == doctorToSave.FirstName.Trim().ToUpper() &&
             d.LastName.Trim().ToUpper() == doctorToSave.LastName.Trim().ToUpper() &&
             d.Specialization == doctorToSave.Specialization.Trim().ToUpper()).ToList();
 
@@ -107,7 +114,7 @@ namespace HospitalAppointmentSystem.Controllers
 
             var doctorMap = _mapper.Map<Doctor>(doctorToSave);
             //ownerMap.Country = _countryRepository.GetCountry(countryId);
-            if (!_doctorRepository.CreateDoctor(doctorMap))
+            if (!await _doctorRepository.CreateDoctor(doctorMap))
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
@@ -120,7 +127,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [Authorize(Roles = "Admin, Doctor")]
-        public IActionResult UpdateDoctor(int doctorId, [FromBody] DoctorDto doctorUpdated)
+        public async Task<IActionResult> UpdateDoctor(int doctorId, [FromBody] DoctorDto doctorUpdated)
         {
             if (doctorUpdated == null)
                 return BadRequest(ModelState);
@@ -128,11 +135,11 @@ namespace HospitalAppointmentSystem.Controllers
             if (doctorId != doctorUpdated.Id)
                 return BadRequest(ModelState);
 
-            if (!_doctorRepository.DoctorExists(doctorId))
+            if (!await _doctorRepository.DoctorExists(doctorId))
                 return NotFound();
 
             var doctorMap = _mapper.Map<Doctor>(doctorUpdated);
-            if (!_doctorRepository.UpdateDoctor(doctorMap))
+            if (!await _doctorRepository.UpdateDoctor(doctorMap))
             {
                 ModelState.AddModelError("", "Something wen wrong while updating.");
                 return StatusCode(500, ModelState);
@@ -145,17 +152,17 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeleteDoctor(int doctorId)
+        public async Task<IActionResult> DeleteDoctor(int doctorId)
         {
-            if (!_doctorRepository.DoctorExists(doctorId))
+            if (!await _doctorRepository.DoctorExists(doctorId))
                 return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var doctorToDelete = _doctorRepository.GetDoctor(doctorId);
+            var doctorToDelete = await _doctorRepository.GetDoctor(doctorId);
             //var categoryMap = _mapper.Map
-            if (!_doctorRepository.DeleteDoctor(doctorToDelete))
+            if (!await _doctorRepository.DeleteDoctor(doctorToDelete))
             {
                 ModelState.AddModelError("", "Something wrong while deleting owner.");
                 return StatusCode(500, ModelState);

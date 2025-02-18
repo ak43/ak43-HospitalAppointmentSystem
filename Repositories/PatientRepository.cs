@@ -12,69 +12,69 @@ namespace HospitalAppointmentSystem.Repositories
         {
             _context = context;
         }
-        public bool SavePatient(int doctorId, Patient Patient) 
+        public async Task<bool> SavePatient(int doctorId, Patient Patient) 
         {
-            var doctorPatientntity = _context.Doctors.Where(a => a.Id == doctorId).FirstOrDefault();
+            var doctorPatientntity = await _context.Doctors.Where(a => a.Id == doctorId).FirstOrDefaultAsync();
             //var category = _context.Categories.Where(a => a.Id == categoryId).FirstOrDefault();
 
-            _context.Add(Patient);
+            await _context.AddAsync(Patient);
 
             var docPatient = new DoctorPatient
             {
                 Doctor = doctorPatientntity,
                 Patient = Patient
             };
-            _context.Add(docPatient);
+            await _context.AddAsync(docPatient);
 
             
-            return Save();
+            return await Save();
         }
 
-        public bool DeletePatient(Patient Patient)
+        public async Task<bool> DeletePatient(Patient Patient)
         {
             _context.Remove(Patient);
-            return Save();
+            return await Save();
         }
 
-        public Patient GetPatient(int patientId)
+        public async Task<Patient> GetPatient(int patientId)
         {
-            return _context.Patients.Where(p => p.Id == patientId).FirstOrDefault();
+            return await _context.Patients.Where(p => p.Id == patientId).FirstOrDefaultAsync();
         }
 
-        public ICollection<Patient> GetPatientByDepartment(int departmentName)
+        public async Task<ICollection<Patient>> GetPatientByDepartment(int departmentName)
         {
             //return _context.Patients.Where(p => p.de)
             return null;
         }
 
-        public ICollection<Patient> GetPatients()
+        public async Task<ICollection<Patient>> GetPatients()
         {
-            return _context.Patients.OrderBy(p => p.FirstName).ToList();
+            return await _context.Patients.OrderBy(p => p.FirstName).ToListAsync();
         }
 
-        public ICollection<Patient> GetPatients(string firstName)
+        public async Task<ICollection<Patient>> GetPatients(string firstName)
         {
-            return _context.Patients.Where(p => p.FirstName == firstName).ToList();
+            return await _context.Patients.Where(p => p.FirstName == firstName).ToListAsync();
         }
 
-        public bool PatientExists(int patientId)
+        public async Task<bool> PatientExists(int patientId)
         {
-            return _context.Patients.Any(p => p.Id == patientId);
+            return await _context.Patients.AnyAsync(p => p.Id == patientId);
         }
 
-        public bool Save()
+        public async Task<bool> Save()
         {
-            var saved = _context.SaveChanges();
+            var saved = await _context.SaveChangesAsync();
             return saved > 0 ? true : false;
         }
 
-        public bool UpdatePatient(Patient Patient)
+        public async Task<bool> UpdatePatient(Patient Patient)
         {
             _context.Update(Patient);
-            return Save();
+            return await Save();
         }
 
-        public ICollection<Appointment> GetPatientAppointments(int patientId)
+        public Task<ICollection<Appointment>> GetPatientAppointments(int patientId)
         {
             throw new NotImplementedException();
         }

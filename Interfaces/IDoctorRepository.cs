@@ -4,31 +4,28 @@ namespace HospitalAppointmentSystem.Interfaces
 {
     public interface IDoctorRepository
     {
-        ICollection<Doctor> GetDoctors();
-        Doctor GetDoctor(int doctorID);
-        ICollection<Doctor> GetDoctors(string name);
+        Task<ICollection<Doctor>> GetDoctors();
+        Task<Doctor> GetDoctor(int doctorID);
+        Task<ICollection<Doctor>> GetDoctors(string name);
 
-        ICollection<Doctor> GetDoctorBySpeciality(string  speciality);
-        ICollection<Doctor> GetDoctorByDepartment(int departmentName);
+        Task<ICollection<Doctor>> GetDoctorBySpeciality(string  speciality);
+        Task<ICollection<Doctor>> GetDoctorByDepartment(int departmentName);
 
         // Get Doctor's Available dates and times
-        ICollection<Availability> GetDoctorAvailability(int doctorId);
+        Task<ICollection<Availability>> GetDoctorAvailability(int doctorId);
 
-        bool DoctorExists(int doctorId);
-        bool CreateDoctor(Doctor doctor);
+        Task<bool> DoctorExists(int doctorId);
+        Task<bool> CreateDoctor(Doctor doctor);
         //bool CreateDoctor(int departmentId, Doctor doctor);
 
-        bool UpdateDoctor(Doctor doctor);
-        bool DeleteDoctor(Doctor doctor);
-        bool Save();
+        Task<bool> UpdateDoctor(Doctor doctor);
+        Task<bool> DeleteDoctor(Doctor doctor);
+        Task<bool> Save();
 
-        ICollection<Appointment> GetAppointments();
-        ICollection<Appointment> GetAppointments(int doctorId);
+        Task<ICollection<Appointment>> GetAppointments();
+        Task<ICollection<Appointment>> GetAppointments(int doctorId);
         //bool setAvailability (int doctorId, string availability);
         //bool updateAvailability (int doctorId, string availability);
         //bool deleteAvailability (int doctorId);
-
-
-
     }
 }

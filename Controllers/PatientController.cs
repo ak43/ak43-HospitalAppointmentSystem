@@ -23,10 +23,10 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(200, Type = typeof(ICollection<PatientDto>))]
         [ProducesResponseType(400)]
         [Authorize]
-        public IActionResult GetPatients() {
+        public async Task<IActionResult> GetPatients() {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var patients = _mapper.Map<List<PatientDto>>(_patientRepository.GetPatients());
+            var patients = _mapper.Map<List<PatientDto>>(await _patientRepository.GetPatients());
             if (patients.Count == 0)
                 return NotFound();
             return Ok(patients);
@@ -36,13 +36,13 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(200, Type = typeof(Patient))]
         [ProducesResponseType(400)]
         [Authorize]
-        public IActionResult GetPatient(int patientId)
+        public async Task<IActionResult> GetPatient(int patientId)
         {
-            if (!_patientRepository.PatientExists(patientId))
+            if (!await _patientRepository.PatientExists(patientId))
                 return NotFound();
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var patient = _mapper.Map<PatientDto>(_patientRepository.GetPatient(patientId));
+            var patient = _mapper.Map<PatientDto>(await _patientRepository.GetPatient(patientId));
             return Ok(patient);
         }
 
@@ -50,11 +50,11 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(200, Type = typeof(ICollection<Doctor>))]
         [ProducesResponseType(400)]
         [Authorize]
-        public IActionResult GetPatientByName(string firstName)
+        public async Task<IActionResult> GetPatientByName(string firstName)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var patients = _mapper.Map<List<PatientDto>>(_patientRepository.GetPatients(firstName));
+            var patients = _mapper.Map<List<PatientDto>>(await _patientRepository.GetPatients(firstName));
             if (patients.Count == 0)
                 return NotFound();
             return Ok(patients);
@@ -64,11 +64,11 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(200, Type = typeof(ICollection<Patient>))]
         [ProducesResponseType(400)]
         [Authorize]
-        public IActionResult GetPatients(int deptId)
+        public async Task<IActionResult> GetPatients(int deptId)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
-            var patients = _mapper.Map<List<PatientDto>>(_patientRepository.GetPatientByDepartment(deptId));
+            var patients = _mapper.Map<List<PatientDto>>(await _patientRepository.GetPatientByDepartment(deptId));
             if (patients.Count == 0)
                 return NotFound();
             return Ok(patients);
@@ -78,18 +78,22 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(200)]
         [ProducesResponseType(400)]
         [Authorize(Roles = "Admin")]
-        public IActionResult SavePatient(int doctorId, [FromBody] PatientDto patientToSave) 
+        public async Task<IActionResult> SavePatient(int doctorId, [FromBody] PatientDto patientToSave) 
         {
             if (patientToSave == null)
                 return BadRequest(ModelState);
 
-            var patient = _patientRepository.GetPatients()
+            //var patient =  _patientRepository.GetPatients()
+            //    .FirstOrDefault(p => p.FirstName.Trim().ToUpper() == patientToSave.FirstName.Trim().ToUpper() &&
+            //p.LastName.Trim().ToUpper() == patientToSave.LastName.Trim().ToUpper()); 
+            var patients = await _patientRepository.GetPatients();
+            var patient =  patients
                 .FirstOrDefault(p => p.FirstName.Trim().ToUpper() == patientToSave.FirstName.Trim().ToUpper() &&
-            p.LastName.Trim().ToUpper() == patientToSave.LastName.Trim().ToUpper()); 
-            
+            p.LastName.Trim().ToUpper() == patientToSave.LastName.Trim().ToUpper());
+
             // List.Any() is used to check if IEnumerable is Empty or Not
             //if (patients.Any())
-                if (patient != null)
+            if (patient != null)
                 {
                 ModelState.AddModelError("", "Patient with the same name already exists");
                 return StatusCode(422, ModelState);
@@ -99,7 +103,7 @@ namespace HospitalAppointmentSystem.Controllers
 
             var patientMap = _mapper.Map<Patient>(patientToSave);
             //ownerMap.Country = _countryRepository.GetCountry(countryId);
-            if (!_patientRepository.SavePatient(doctorId, patientMap)) 
+            if (!await _patientRepository.SavePatient(doctorId, patientMap)) 
             {
                 ModelState.AddModelError("", "Something went wrong while saving.");
                 return StatusCode(500, ModelState);
@@ -112,7 +116,7 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [Authorize(Roles = "Admin")]
-        public IActionResult UpdateDoctor(int patientId, [FromBody] PatientDto patientUpdated)
+        public async Task<IActionResult> UpdateDoctor(int patientId, [FromBody] PatientDto patientUpdated)
         {
             if (patientUpdated == null)
                 return BadRequest(ModelState);
@@ -120,11 +124,11 @@ namespace HospitalAppointmentSystem.Controllers
             if (patientId != patientUpdated.Id)
                 return BadRequest(ModelState);
 
-            if (!_patientRepository.PatientExists(patientId))
+            if (!await _patientRepository.PatientExists(patientId))
                 return NotFound();
 
             var patientMap = _mapper.Map<Patient>(patientUpdated); 
-            if (!_patientRepository.UpdatePatient(patientMap)) 
+            if (!await _patientRepository.UpdatePatient(patientMap)) 
             { 
                 ModelState.AddModelError("", "Something went wrong while updating.");
                 return StatusCode(500, ModelState);
@@ -137,17 +141,17 @@ namespace HospitalAppointmentSystem.Controllers
         [ProducesResponseType(400)]
         [ProducesResponseType(404)]
         [Authorize(Roles = "Admin")]
-        public IActionResult DeletePatient(int patientId)
+        public async Task<IActionResult> DeletePatient(int patientId)
         {
-            if (!_patientRepository.PatientExists(patientId))
+            if (!await _patientRepository.PatientExists(patientId))
                 return NotFound();
 
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            var patienToDelete = _patientRepository.GetPatient(patientId);
+            var patienToDelete = await _patientRepository.GetPatient(patientId);
             //var categoryMap = _mapper.Map
-            if (!_patientRepository.DeletePatient(patienToDelete))
+            if (!await _patientRepository.DeletePatient(patienToDelete))
             {
                 ModelState.AddModelError("", "Something wrong while deleting owner.");
                 return StatusCode(500, ModelState);
